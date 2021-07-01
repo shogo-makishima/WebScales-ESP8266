@@ -24,15 +24,34 @@ namespace Data {
     /// Контейнер стандартных значений
     DataContainer defaultData = { 0.0f, true };
 
+    /// Сохранить структуру
+    void SaveStruct(void *dataSource, size_t size);
+    /// Загрузить структуру
+    void LoadStruct(void *dataDest, size_t size);
+
+    /// Метод инициализации
+    void INIT() {
+    }
+
     /// Сохранить данные
     void Save() {
-        EEPROM.put(10, (void*)&dataContainer);
+        SaveStruct(&dataContainer, sizeof(dataContainer));
+
+        Serial.println("[DATA] Save;");
+
+        Serial.print("scaleCalibration = "); Serial.println(dataContainer.scaleCalibration);
+        Serial.print("isGr = "); Serial.println(dataContainer.isGr);
         // eeprom_write_block((void*)&dataContainer, 10, sizeof(dataContainer));
     }
 
     /// Загрузить данные
     void Load() {
-        EEPROM.get(10, dataContainer);
+        LoadStruct(&dataContainer, sizeof(dataContainer));
+
+        Serial.println("[DATA] Load;");
+
+        Serial.print("scaleCalibration = "); Serial.println(dataContainer.scaleCalibration);
+        Serial.print("isGr = "); Serial.println(dataContainer.isGr);
         // eeprom_read_block((void*)&dataContainer, 10, sizeof(dataContainer));
     }
 
@@ -42,6 +61,27 @@ namespace Data {
 
         dataContainer.scaleCalibration = defaultData.scaleCalibration;
         dataContainer.isGr = defaultData.isGr;
+    }
+
+    /// Сохранить структуру
+    void SaveStruct(void *dataSource, size_t size) {
+        EEPROM.begin(size * 2);
+        for (size_t i = 0; i < size; i++) {
+            char data = ((char*)dataSource)[i];
+            EEPROM.write(i, data);
+        }
+
+        EEPROM.commit();
+    }
+
+    /// Загрузить структуру
+    void LoadStruct(void *dataDest, size_t size) {
+        EEPROM.begin(size * 2);
+
+        for (size_t i = 0; i < size; i++) {
+            char data = EEPROM.read(i);
+            ((char*)dataDest)[i] = data;
+        }
     }
 };
 

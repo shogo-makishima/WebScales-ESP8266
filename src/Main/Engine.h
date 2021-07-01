@@ -9,6 +9,8 @@
 #include "Libraries/ArduinoJson/ArduinoJson.h"
 #include <EEPROM.h>
 
+#include "Libraries/Timer.h"
+
 #include "Libraries/SaveData.hpp"
 
 #include "Libraries/Regexp/Regexp.h"

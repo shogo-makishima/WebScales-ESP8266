@@ -37,12 +37,11 @@ namespace Web {
         String code = Server.arg("code");
 
         Serial.print("[SERVER] Handle /scale_set ");
-        Serial.println(code);
 
         PRegex::ParseString(code);
-        Main::UpdateWeight();
         
         char JSON_BUFFER[JSON_BUFFER_SIZE];
+
         UpdateData();
         serializeJson(JSON, JSON_BUFFER);
 
@@ -56,7 +55,6 @@ namespace Web {
         char JSON_BUFFER[JSON_BUFFER_SIZE];
 
         UpdateData();
-        JSON["scales"]["scaleCalibration"] = Data::dataContainer.scaleCalibration;
         JSON["scales"]["weightStandard"] = Main::weightStandard;
         
         serializeJson(JSON, JSON_BUFFER);
@@ -68,6 +66,8 @@ namespace Web {
 
     /// Обновить данные
     void _handleUpdateData() {
+        Main::UpdateWeight();
+
         char JSON_BUFFER[JSON_BUFFER_SIZE];
         UpdateData();
         serializeJson(JSON, JSON_BUFFER);
@@ -77,10 +77,6 @@ namespace Web {
 
     /// Инициализировать сервер
     void INIT() {
-        Serial.begin(115200);
-
-        Main::INIT();
-
         pinMode(LED_PIN, OUTPUT);
 
         WiFi.begin(SSID, PASSWORD);
@@ -109,10 +105,10 @@ namespace Web {
 
     /// Обновить данные
     void UpdateData() {
-        JSON["scales"]["weight"] = Main::weightGr;
+        JSON["scales"]["weight"] = round(Main::weight * 10) / 10;
         JSON["scales"]["isGr_Mode"] = Data::dataContainer.isGr;
+        JSON["scales"]["scaleCalibration"] = Data::dataContainer.scaleCalibration;
     }
-
 };
 
 #endif

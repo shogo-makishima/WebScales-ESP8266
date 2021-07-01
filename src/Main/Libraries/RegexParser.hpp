@@ -55,26 +55,28 @@ namespace PRegex {
                 index = matchState.MatchStart + matchState.MatchLength;
             } else break;
         }
-        Serial.println(BUFFER_COMMAND[0]);
+
         if (String(BUFFER_COMMAND[0]) == String("W0")) {
-            Main::scales.tare(10);
+            Main::scales.tare(1);
         } else if (String(BUFFER_COMMAND[0]) == String("W1")) {
             Main::weightStandard = atof(BUFFER_COMMAND[1]);
 
             if (Main::weightStandard != 0) {
-                float test = Main::scales.get_units(10);
-                Data::dataContainer.scaleCalibration = Main::scales.get_units(10) / (Main::weightStandard / 0.035274);
-            }
+                Main::scales.set_scale(1);
+                Main::calibrationTimer.Reset();
 
-            Main::scales.set_scale(Data::dataContainer.scaleCalibration);
+                Data::Save();
+            }
         } else if (String(BUFFER_COMMAND[0]) == String("W2")) {
             float newValue = atof(BUFFER_COMMAND[1]);
             if (newValue != 0) Data::dataContainer.scaleCalibration = newValue;
             Main::scales.set_scale(Data::dataContainer.scaleCalibration);
+            
             Data::Save();
         } else if (String(BUFFER_COMMAND[0]) == String("W3")) {
             Data::dataContainer.isGr = !(strcmp(BUFFER_COMMAND[1], "0") == 0);
-            Serial.println(Data::dataContainer.isGr);
+            
+            Data::Save();
         }
 
         ClearBuffer();

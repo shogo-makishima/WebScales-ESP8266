@@ -7,13 +7,15 @@ namespace Pages {
             .button {
                 background-color: #646464;
                 border: none;
+                border-radius: 5px;
                 color: white;
                 width: 40%;
-                height: 52px;
+                height: 72px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 16px;
+                font-size: 24px;
+                cursor: pointer;
             }
             .button:hover {
                 background-color: #575757;
@@ -26,12 +28,14 @@ namespace Pages {
                 background-color: #646464;
                 border: none;
                 color: white;
-                width: 75%;
+                width: 80%;
+                border-radius: 5px;
                 height: 100px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 36pt;
+                font-size: 48px;
+                cursor: pointer;
             }
             .clear_button:hover {
                 background-color: #575757;
@@ -45,16 +49,17 @@ namespace Pages {
                 border: none;
                 color: white;
                 width: 40%;
-                height: 50px;
+                height: 70px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 16px;
+                font-size: 24px;
+                border-radius: 5px;
             }
 
             #standart_weight_input::placeholder {
                 color: whitesmoke;
-                font-size: 16px;
+                font-size: 24px;
                 font-style: italic;
             }
 
@@ -63,20 +68,22 @@ namespace Pages {
                 border: none;
                 color: white;
                 width: 40%;
-                height: 50px;
+                height: 70px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 16px;
+                font-size: 24px;
+                border-radius: 5px;
             }
 
             #coefficient_input::placeholder {
                 color: whitesmoke;
-                font-size: 16px;
+                font-size: 24px;
                 font-style: italic;
             }
             
             #input_detail {
+                
             }
 
             #input_summary {
@@ -84,12 +91,21 @@ namespace Pages {
                 border: none;
                 color: white;
                 width: 40%;
-                height: 52px;
+                height: 72px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
                 font-size: 24px;
-                line-height: 52px;
+                line-height: 72px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            #input_summary:hover {
+                background-color: #575757;
+            }
+            #input_summary:active {
+                background-color: #4b4b4b;
             }
 
             /* Chrome, Safari, Edge, Opera */
@@ -105,41 +121,79 @@ namespace Pages {
             }
 
             #weight_text {
-                font-size: 48pt;
+                font-size: 81px;
+                line-height: 10px;
+            }
+
+            #title_menu_text {
+                font-size: 32px;
+            }
+
+            #prompt_text {
+                background-color: #646464;
+                border: none;
+                color: white;
+                width: 80%;
+                height: fit-content;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 24px;
+               
+                border-radius: 5px;
+                cursor: help;
             }
         </style>
     <body onload="getDataStart()" style="background-color: #fffcf1 ">
         <center>
             <div>
                 <div>
-                    <p id="weight_text">Вес: <span id="weight">NA</span><span id="units"> гр.</span></span></p>
+                    <p id="weight_text">Вес: <span id="weight">NA</span></p>
                     <button class="clear_button" onclick="sendGCODE('W0')">Обнулить</button>
                 </div>
                 <div>
-                    <h2>Единицы измерения</h2>
-                    <button class="button" onclick="sendGCODE('W3\s0')">Граммы</button>
+                    <p id="title_menu_text">Единицы измерения</p>
+                    <button class="button" onclick="sendGCODE('W3 0')">Граммы</button>
                     <button class="button" onclick="sendGCODE('W3 1')">Килограммы</button>
                 </div>
                 <div>
-                    <h2>Настройки</h2>
-                    <br/>
+                    <p id="title_menu_text">Настройки</p>
                     <!--<button class="button" onclick="sendGCODE('W1')">Калибровка</button>-->
                     <details id="input_detail">
                         <summary id="input_summary">Калибровка</summary>
                         <br/>
                         <br/>
-                        <input type="number" value="0" placeholder="Базовый вес..." id="standart_weight_input"></input>
-                        <span/>
-                        <button class="button" onclick="sendGCODE('W1 ' +  + document.getElementById('standart_weight_input').value)">Принять</button>
+                        <div style="width: 100%;">
+                            <input type="number" value="0" placeholder="Базовый вес..." id="standart_weight_input"></input>
+                            <span/>
+                            <button class="button" onclick="sendGCODE('W1 ' +  + document.getElementById('standart_weight_input').value)">Принять</button>
+                            <p id="prompt_text"> 
+                                Инструкция по выполнению калибровки.
+                                <br/>
+                                <br/>
+                                1. Убрать все из чаши весов.
+                                <br/>
+                                2. Написать массу в соответсвующее поле ввода.
+                                <br/>
+                                3. Нажать на кнопку принять.
+                                <br/>
+                                4. В течении 10 секунд положить груз с данной массой на весы и дождаться результата калибровки (не касаясь весов и не кладя в них грузы).
+                                <br/>
+                                <br/>
+                                P.S. При не соблюдении порядка действий работоспособность не гарантирована.
+                            </p>
+                        </div>
                     </details>
                     <br/>
                     <details id="input_detail">
                         <summary id="input_summary">Коэффициент</summary>
                         <br/>
                         <br/>
-                        <input type="number" value="0" placeholder="Введите новый коэффицент..." id="coefficient_input"></input>
-                        <span/>
-                        <button class="button" onclick="sendGCODE('W2 ' + document.getElementById('coefficient_input').value)">Принять</button>
+                        <div style="width: 100%;">
+                            <input type="number" value="0" placeholder="Новый коэффицент..." id="coefficient_input"></input>
+                            <span/>
+                            <button class="button" onclick="sendGCODE('W2 ' + document.getElementById('coefficient_input').value)">Принять</button>
+                        </div>
                     </details>
                 </div>
             </div>
@@ -151,6 +205,8 @@ namespace Pages {
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var data = JSON.parse(this.responseText);
+
+                    document.getElementById("coefficient_input").value = data["scales"]["scaleCalibration"];
                     Update(data);
                 }
             };
@@ -195,13 +251,7 @@ namespace Pages {
         }
 
         function setWeight(weight, mode) {
-            if (mode == true) {
-                document.getElementById("weight").innerHTML = weight * 1000;
-                document.getElementById("units").innerHTML = " кг.";
-            } else {
-                document.getElementById("weight").innerHTML = weight;
-                document.getElementById("units").innerHTML = " гр.";
-            }
+            document.getElementById("weight").innerHTML = (mode) ?  Math.round(weight * 0.001) + " кг." : weight + " гр.";
         }
     </script>
 </html>

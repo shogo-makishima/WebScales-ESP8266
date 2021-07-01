@@ -1,35 +1,75 @@
 #ifndef _SCALES_H_
 #define _SCALES_H_
 
-#define DOUT_PIN 15
-#define SCK_PIN 14
+#define DOUT_PIN D5
+#define SCK_PIN D6
+
+#define WEIGHT_SIZE 8
+#define TIME_TO_CALIBRATION 10000
 
 namespace Main {
     // создание экземпляра объекта
     HX711 scales;
     // переменные
-    float weightUnits = 0;
-    float weightGr = 0;
+    float weight = 0;
     float weightStandard = 0;
+
+    float weights[WEIGHT_SIZE] = { 0, };
+    byte weightReadCarret = 0;
+
+    void Calibration();
+    float GetWeightFromArray();
+
+    Timer calibrationTimer = Timer(10000, [] {
+        Calibration();
+    });
 
     void INIT() {
         scales.begin(DOUT_PIN, SCK_PIN);
-        //scaleCalibration = EEPROM_float_read(0);
-        //scales.set_scale(scaleCalibration);
-        //Serial.print(" COEF ");
-        //Serial.println(scaleCalibration);
         
-        // Сбрасываем весы на 0 (усредненное по 5 измерениям)
-        scales.tare(5);
+        scales.set_scale();                                          // выполняем измерение значения без калибровочного коэффициента
+        scales.tare();                                               // сбрасываем значения веса на датчике в 0
+        scales.set_scale(Data::dataContainer.scaleCalibration);      // устанавливаем калибровочный коэффициент
 
-        Data::dataContainer.isGr = true;
+        calibrationTimer.time = DEACTIVE_TIMER;
     }
 
     void UpdateWeight() {
-        weightUnits = scales.get_units(5);
-        weightGr = weightUnits * 0.035274;
+        Main::calibrationTimer.Update();
 
-        if (weightGr < 1) weightGr = 0;
+        float local_weightUnits = scales.get_units(1);
+        float local_weightGr = local_weightUnits * 0.035274f;
+
+        if (local_weightGr < 1) local_weightGr = 0;
+        //weight = local_weightGr;
+        
+        weights[weightReadCarret] = local_weightGr;
+        weightReadCarret++;
+
+        if (weightReadCarret >= WEIGHT_SIZE) {
+            weight = GetWeightFromArray();
+            weightReadCarret = 0;
+        }
+    }
+
+    void Calibration() {
+        if (weightStandard != 0) {
+            float local_calibration = scales.get_units(1) / (weightStandard / 0.035274f);
+            if (local_calibration != 0) Data::dataContainer.scaleCalibration = local_calibration;
+            
+            Serial.print("[SERVER] Calibration was complete with value: ");
+            Serial.println(Data::dataContainer.scaleCalibration);
+        }
+        
+        scales.set_scale(Data::dataContainer.scaleCalibration);
+
+        calibrationTimer.time = DEACTIVE_TIMER;
+    }
+
+    float GetWeightFromArray() {
+        float sum = 0;
+        for (int i = 0; i < WEIGHT_SIZE; i++) sum += weights[i];
+        return sum / WEIGHT_SIZE;
     }
     /*
     void loop() {
