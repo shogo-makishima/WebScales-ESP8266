@@ -14,6 +14,8 @@ void setup() {
     Data::Load();
     Serial.println("[SERVER] Data was load");
 
+    Data::Test::INIT();
+
     Web::SSID = "Robostart";
     Web::PASSWORD = "25028325";
     Web::INIT();
@@ -26,7 +28,6 @@ void setup() {
 void loop() {
     Web::Update();
     Main::UpdateWeight();
-    Serial.println(Main::weight);
 }
 /*
 HX711 scale;                                                  // создаём объект scale

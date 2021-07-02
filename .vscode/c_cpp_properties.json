@@ -8,10 +8,10 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "C:/Users/Robostart4/Documents/PlatformIO/Projects/Weight_ESP8266_WebServer/include",
-                "C:/Users/Robostart4/Documents/PlatformIO/Projects/Weight_ESP8266_WebServer/src",
-                "C:/Users/Robostart4/Documents/PlatformIO/Projects/Weight_ESP8266_WebServer/lib/Regexp/src",
-                "C:/Users/Robostart4/Documents/PlatformIO/Projects/Weight_ESP8266_WebServer/lib/ArduinoJson/src",
+                "C:/GITHUB/Wideus-Studio/WebScales-ESP8266/include",
+                "C:/GITHUB/Wideus-Studio/WebScales-ESP8266/src",
+                "C:/GITHUB/Wideus-Studio/WebScales-ESP8266/lib/Regexp/src",
+                "C:/GITHUB/Wideus-Studio/WebScales-ESP8266/lib/ArduinoJson/src",
                 "C:/Users/Robostart4/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src",
                 "C:/Users/Robostart4/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src",
                 "C:/Users/Robostart4/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM",
@@ -58,10 +58,10 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "C:/Users/Robostart4/Documents/PlatformIO/Projects/Weight_ESP8266_WebServer/include",
-                    "C:/Users/Robostart4/Documents/PlatformIO/Projects/Weight_ESP8266_WebServer/src",
-                    "C:/Users/Robostart4/Documents/PlatformIO/Projects/Weight_ESP8266_WebServer/lib/Regexp/src",
-                    "C:/Users/Robostart4/Documents/PlatformIO/Projects/Weight_ESP8266_WebServer/lib/ArduinoJson/src",
+                    "C:/GITHUB/Wideus-Studio/WebScales-ESP8266/include",
+                    "C:/GITHUB/Wideus-Studio/WebScales-ESP8266/src",
+                    "C:/GITHUB/Wideus-Studio/WebScales-ESP8266/lib/Regexp/src",
+                    "C:/GITHUB/Wideus-Studio/WebScales-ESP8266/lib/ArduinoJson/src",
                     "C:/Users/Robostart4/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src",
                     "C:/Users/Robostart4/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src",
                     "C:/Users/Robostart4/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM",

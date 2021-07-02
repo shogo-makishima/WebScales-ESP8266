@@ -57,7 +57,9 @@ namespace PRegex {
         }
 
         if (String(BUFFER_COMMAND[0]) == String("W0")) {
+            Main::scales.set_scale();
             Main::scales.tare(1);
+            Main::scales.set_scale(Data::dataContainer.scaleCalibration);
         } else if (String(BUFFER_COMMAND[0]) == String("W1")) {
             Main::weightStandard = atof(BUFFER_COMMAND[1]);
 
@@ -77,6 +79,8 @@ namespace PRegex {
             Data::dataContainer.isGr = !(strcmp(BUFFER_COMMAND[1], "0") == 0);
             
             Data::Save();
+        }  else if (String(BUFFER_COMMAND[0]) == String("W10")) {
+            Data::Test::Clear();
         }
 
         ClearBuffer();

@@ -141,6 +141,59 @@
                 border-radius: 5px;
                 cursor: help;
             }
+
+            #test_table {
+                table-layout: fixed;
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            #test_table_head th:nth-child(1) {
+                background-color: #363636;
+                color: white;
+                text-align: center;
+                font-size: 32px;
+                font-style: normal;
+
+                /*border-top-left-radius: 10px;*/
+                border-left: 3px solid rgb(44, 44, 44);
+                border-right: 3px solid rgb(44, 44, 44);
+                width: 20%;
+            }
+            #test_table_head th:nth-child(2) {
+                background-color: #363636;
+                color: white;
+                text-align: center;
+                font-size: 32px;
+                font-style: normal;
+                
+                border-right: 3px solid rgb(44, 44, 44);
+                width: 40%;
+            }
+            #test_table_head th:nth-child(3) {
+                background-color: #363636;
+                color: white;
+                text-align: center;
+                font-size: 32px;
+                font-style: normal;
+                
+                /*border-top-right-radius: 10px;*/
+                border-right: 3px solid rgb(44, 44, 44);
+                width: 40%;
+            }  
+
+            #test_table_td {
+                text-align: center;
+                background-color: rgb(94, 94, 94);
+                color: white;
+                font-size: 24px;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                border-bottom: 3px inset rgb(73, 73, 73);
+                border-right: 3px solid rgb(73, 73, 73);
+                border-left: 3px solid rgb(73, 73, 73);
+            }
+
         </style>
     <body onload="getDataStart()" style="background-color: #fffcf1 ">
         <center>
@@ -153,6 +206,46 @@
                     <p id="title_menu_text">Единицы измерения</p>
                     <button class="button" onclick="sendGCODE('W3 0')">Граммы</button>
                     <button class="button" onclick="sendGCODE('W3 1')">Килограммы</button>
+                </div>
+                <br/>
+                <div>
+                    <details id="input_detail">
+                        <summary id="input_summary">Таблица</summary>
+                        <br/>
+                        <br/>
+                        <div style="width: 100%;">
+                            <br/>
+                            <button class="button" onclick="tableAdd()">Добавить</button>
+                            <button class="button" onclick="tableUpdate()">Обновить</button>
+                            <br/>
+                            <span/>
+                            <br/>
+                            <button class="button" onclick="tableClear()">Очистить</button>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <span/>
+                            <table id="test_table">
+                                <thead id="test_table_head">
+                                    <th id="test_table_th" scope="col">Индекс</th>
+                                    <th id="test_table_th" scope="col">Вес</th>
+                                    <th id="test_table_th" scope="col">Длинна</th>
+                                </thead>
+                                <tbody id="test_table_body">
+                                    <tr>
+                                        <td id="test_table_td">0</td>
+                                        <td id="test_table_td">200</td>
+                                        <td id="test_table_td">20</td>
+                                    </tr>
+                                    <tr>
+                                        <td id="test_table_td">1</td>
+                                        <td id="test_table_td">200</td>
+                                        <td id="test_table_td">20</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
                 </div>
                 <div>
                     <p id="title_menu_text">Настройки</p>
@@ -213,6 +306,56 @@
             xhttp.open("GET", "scale_set?code=" + gcode, true);
             xhttp.send();
         }
+
+        function clearTable() {
+            document.getElementById("test_table_body").innerHTML = "";
+        }
+
+        function tableAdd() {
+            // if (data.hasOwnPropety("table")) console.log(1);
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var data = JSON.parse(this.responseText);
+                    
+                    clearTable();
+                    setTestTable(data);
+                }
+            };
+
+            xhttp.open("GET", "table_add", true);
+            xhttp.send();
+        }
+
+        function tableClear() {
+            // if (data.hasOwnPropety("table")) console.log(1);
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var data = JSON.parse(this.responseText);
+                    
+                    clearTable();
+                }
+            };
+
+            xhttp.open("GET", "table_clear", true);
+            xhttp.send();
+        }
+
+        function tableUpdate() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var data = JSON.parse(this.responseText);
+                    
+                    clearTable();
+                    setTestTable(data);
+                }
+            };
+
+            xhttp.open("GET", "table_update", true);
+            xhttp.send();
+        }
         
         function getDataStart() {
             var xhttp = new XMLHttpRequest();
@@ -220,9 +363,13 @@
                 if (this.readyState == 4 && this.status == 200) {
                     var data = JSON.parse(this.responseText);
                     
+                    clearTable();
+
                     document.getElementById("coefficient_input").value = data["scales"]["scaleCalibration"];
                     document.getElementById("standart_weight_input").value = data["scales"]["weightStandard"];
                     Update(data);
+
+                    setTestTable(data);
                 }
             };
 
@@ -246,6 +393,19 @@
 
         function Update(json) {
             setWeight(json["scales"]["weight"], json["scales"]["isGr_Mode"]);
+        }
+
+        function setTestTable(data) {
+            var table = data["table"];
+            for (let i = 0; i < table["length"]; i++) {
+                document.getElementById("test_table_body").innerHTML += `
+                    <tr>
+                        <td id="test_table_td">${i}</td>
+                        <td id="test_table_td">${table[i]["weight"]}</td>
+                        <td id="test_table_td">${table[i]["lenght"]}</td>
+                    </tr>
+                `;
+            }
         }
 
         function setWeight(weight, mode) {

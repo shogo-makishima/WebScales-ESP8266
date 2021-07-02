@@ -20,6 +20,8 @@
 
 #include "Pages/index.h"
 
+#include "Devices/TestData.hpp"
+
 #include "Libraries/RegexParser.hpp"
 
 #include "WebServer.hpp"
