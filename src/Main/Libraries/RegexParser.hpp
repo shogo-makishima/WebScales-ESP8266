@@ -79,8 +79,10 @@ namespace PRegex {
             Data::dataContainer.isGr = !(strcmp(BUFFER_COMMAND[1], "0") == 0);
             
             Data::Save();
-        }  else if (String(BUFFER_COMMAND[0]) == String("W10")) {
+        } else if (String(BUFFER_COMMAND[0]) == String("W10")) { // Очистить
             Data::Test::Clear();
+        } else if (String(BUFFER_COMMAND[0]) == String("W11")) { // Добавить
+            Data::Test::MakeBreakpoint(Main::weight, 0.0f);
         }
 
         ClearBuffer();

@@ -35,6 +35,7 @@ namespace Web {
         Server.send(200, "text/html", page);
     }
 
+    /*
     void _handleTableAdd() {
         Serial.println("[SERVER] Handle /table_add");
 
@@ -68,12 +69,13 @@ namespace Web {
 
         JSON.clear();
     }
+    */
 
     /// Перехват весов
     void _handleScale() {
         String code = Server.arg("code");
 
-        Serial.print("[SERVER] Handle /scale_set ");
+        Serial.println("[SERVER] Handle /scale_set");
 
         PRegex::ParseString(code);
         
@@ -93,7 +95,6 @@ namespace Web {
 
         UpdateData();
         JSON["scales"]["weightStandard"] = Main::weightStandard;
-        UpdateTest();
 
         serializeJson(JSON, JSON_BUFFER);
         
@@ -132,8 +133,6 @@ namespace Web {
         Server.on("/scale_set", _handleScale);
         Server.on("/start_data", _handleStartData);
         Server.on("/update_data", _handleUpdateData);
-        Server.on("/table_add", _handleTableAdd);
-        Server.on("/table_clear", _handleTableClear);
 
         Server.begin();
     }
@@ -148,12 +147,17 @@ namespace Web {
         JSON["scales"]["weight"] = round(Main::weight * 10) / 10;
         JSON["scales"]["isGr_Mode"] = Data::dataContainer.isGr;
         JSON["scales"]["scaleCalibration"] = Data::dataContainer.scaleCalibration;
+
+        UpdateTest();
     }
 
     /// Обновить тест
     void UpdateTest() {
+        Serial.println("[SERVER] Update test");
+
         int count = 0;
         for (int i = 0; i < TEST_LENGHT; i++) {
+            
             if (Data::Test::breakpoints[i].isActive) {
                 JSON["table"][i]["weight"] = Data::Test::breakpoints[i].weight;
                 JSON["table"][i]["lenght"] = Data::Test::breakpoints[i].lenght;

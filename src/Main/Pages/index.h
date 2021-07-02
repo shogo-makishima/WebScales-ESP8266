@@ -217,8 +217,8 @@ namespace Pages {
                         <br/>
                         <div style="width: 100%;">
                             <br/>
-                            <button class="button" onclick="tableClear()">Очистить</button>
-                            <button class="button" onclick="tableAdd()">Добавить</button>
+                            <button class="button" onclick="if (currentTestTableLenght != 8) {sendGCODE('W11');}">Добавить</button>
+                            <button class="button" onclick="sendGCODE('W10')">Очистить</button>
                             <br/>
                             <br/>
                             <br/>
@@ -289,6 +289,8 @@ namespace Pages {
         </center>
     </body>
     <script>
+        var currentTestTableLenght = 0;
+
         function sendGCODE(gcode) {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
@@ -300,44 +302,13 @@ namespace Pages {
                 }
             };
             
-            
             xhttp.open("GET", "scale_set?code=" + gcode, true);
             xhttp.send();
         }
 
         function clearTable() {
             document.getElementById("test_table_body").innerHTML = "";
-        }
-
-        function tableAdd() {
-            // if (data.hasOwnPropety("table")) console.log(1);
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    var data = JSON.parse(this.responseText);
-                    
-                    clearTable();
-                    setTestTable(data);
-                }
-            };
-
-            xhttp.open("GET", "table_add", true);
-            xhttp.send();
-        }
-
-        function tableClear() {
-            // if (data.hasOwnPropety("table")) console.log(1);
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    var data = JSON.parse(this.responseText);
-                    
-                    clearTable();
-                }
-            };
-
-            xhttp.open("GET", "table_clear", true);
-            xhttp.send();
+            currentTestTableLenght = 0;
         }
         
         function getDataStart() {
@@ -345,14 +316,10 @@ namespace Pages {
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var data = JSON.parse(this.responseText);
-                    
-                    clearTable();
 
                     document.getElementById("coefficient_input").value = data["scales"]["scaleCalibration"];
                     document.getElementById("standart_weight_input").value = data["scales"]["weightStandard"];
                     Update(data);
-
-                    setTestTable(data);
                 }
             };
 
@@ -376,10 +343,14 @@ namespace Pages {
 
         function Update(json) {
             setWeight(json["scales"]["weight"], json["scales"]["isGr_Mode"]);
+            setTestTable(json);
         }
 
         function setTestTable(data) {
+            clearTable();
+
             var table = data["table"];
+            currentTestTableLenght = table["length"];
             for (let i = 0; i < table["length"]; i++) {
                 document.getElementById("test_table_body").innerHTML += `
                     <tr>
