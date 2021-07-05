@@ -199,7 +199,10 @@
         <center>
             <div>
                 <div>
-                    <p id="weight_text">Вес: <span id="weight">NA</span></p>
+                    <p id="weight_text">Вес, <span id="units">гр.</span></p>
+                    <span id="weight" style="font-size: 256px; line-height: 128px;">NA</span>
+                    <br/>
+                    <br/>
                     <button class="clear_button" onclick="sendGCODE('W0')">Обнулить</button>
                 </div>
                 <div>
@@ -325,13 +328,15 @@
             xhttp.send();
         }
 
-        setInterval(function() { getDataUpdate(); }, 500); 
+        setInterval(function() { getDataUpdate(); }, 1000); 
         function getDataUpdate() {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var data = JSON.parse(this.responseText);
+
                     Update(data);
+                    document.getElementById("coefficient_input").value = data["scales"]["scaleCalibration"];
                 }
             };
 
@@ -361,7 +366,8 @@
         }
 
         function setWeight(weight, mode) {
-            document.getElementById("weight").innerHTML = (mode) ?  Math.round(weight * 0.001) + " кг." : weight + " гр.";
+            document.getElementById("units").innerHTML = `${(mode) ? " кг." : " гр."}`
+            document.getElementById("weight").innerHTML = (mode) ?  Math.round(weight * 0.001) : weight;
         }
     </script>
 </html>

@@ -47,7 +47,7 @@ namespace PRegex {
 
         char PARSE_BUFFER [64];
         while (true) {
-            char result = matchState.Match ("(-?[0-9A-Z]+[.]?[0-9A-Z]*)", index);
+            char result = matchState.Match ("(-?[0-9A-Za-z]+[.]?[0-9A-Za-z]*)", index);
 
             if (result == REGEXP_MATCHED) {
                 strcpy(BUFFER_COMMAND[caretCommandPosition], matchState.GetCapture (PARSE_BUFFER, 0));
@@ -66,8 +66,6 @@ namespace PRegex {
             if (Main::weightStandard != 0) {
                 Main::scales.set_scale(1);
                 Main::calibrationTimer.Reset();
-
-                Data::Save();
             }
         } else if (String(BUFFER_COMMAND[0]) == String("W2")) {
             float newValue = atof(BUFFER_COMMAND[1]);
@@ -83,6 +81,11 @@ namespace PRegex {
             Data::Test::Clear();
         } else if (String(BUFFER_COMMAND[0]) == String("W11")) { // Добавить
             Data::Test::MakeBreakpoint(Main::weight, 0.0f);
+        }  else if (String(BUFFER_COMMAND[0]) == String("W102")) {
+            strcpy(Data::dataContainer.SSID, BUFFER_COMMAND[1]);
+            strcpy(Data::dataContainer.PSK, BUFFER_COMMAND[2]);
+
+            Data::Save();
         }
 
         ClearBuffer();

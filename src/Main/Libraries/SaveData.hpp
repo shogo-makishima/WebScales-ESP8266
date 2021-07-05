@@ -1,6 +1,10 @@
 #ifndef _DATA_CONTAINER_H_
 #define _DATA_CONTAINER_H_
 
+#define START_WRITE 3512
+#define MAX_SSID_LENGHT 64
+#define MAX_PSK_LENGHT 64
+
 /// Управление данными для сохранеия
 namespace Data {
     /// Структура контейнера данных
@@ -16,13 +20,18 @@ namespace Data {
 
         /// Величина измерения граммы | килограммы
         bool isGr;
+
+        /// Имя сети
+        char SSID[MAX_SSID_LENGHT];
+        /// Пароль от сети
+        char PSK[MAX_PSK_LENGHT];
     };
 
     /// Контейнер данных
-    DataContainer dataContainer = { 0.0f, true };
+    DataContainer dataContainer = { 0.0f, true, "Robostart", "25028325" };
 
     /// Контейнер стандартных значений
-    DataContainer defaultData = { 0.0f, true };
+    DataContainer defaultData = { 0.0f, true, "Robostart", "25028325" };
 
     /// Сохранить структуру
     void SaveStruct(void *dataSource, size_t size);
@@ -41,6 +50,9 @@ namespace Data {
 
         Serial.print("scaleCalibration = "); Serial.println(dataContainer.scaleCalibration);
         Serial.print("isGr = "); Serial.println(dataContainer.isGr);
+        Serial.print("SSID = "); Serial.println(dataContainer.SSID);
+        Serial.print("PSK = "); Serial.println(dataContainer.PSK);
+    
         // eeprom_write_block((void*)&dataContainer, 10, sizeof(dataContainer));
     }
 
@@ -52,6 +64,9 @@ namespace Data {
 
         Serial.print("scaleCalibration = "); Serial.println(dataContainer.scaleCalibration);
         Serial.print("isGr = "); Serial.println(dataContainer.isGr);
+        Serial.print("SSID = "); Serial.println(dataContainer.SSID);
+        Serial.print("PSK = "); Serial.println(dataContainer.PSK);
+        
         // eeprom_read_block((void*)&dataContainer, 10, sizeof(dataContainer));
     }
 
@@ -65,7 +80,7 @@ namespace Data {
 
     /// Сохранить структуру
     void SaveStruct(void *dataSource, size_t size) {
-        EEPROM.begin(size * 2);
+        EEPROM.begin(START_WRITE + size * 2);
         for (size_t i = 0; i < size; i++) {
             char data = ((char*)dataSource)[i];
             EEPROM.write(i, data);
@@ -76,7 +91,7 @@ namespace Data {
 
     /// Загрузить структуру
     void LoadStruct(void *dataDest, size_t size) {
-        EEPROM.begin(size * 2);
+        EEPROM.begin(START_WRITE + size * 2);
 
         for (size_t i = 0; i < size; i++) {
             char data = EEPROM.read(i);

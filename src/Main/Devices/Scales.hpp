@@ -1,8 +1,8 @@
 #ifndef _SCALES_H_
 #define _SCALES_H_
 
-#define DOUT_PIN D5
-#define SCK_PIN D6
+#define DOUT_PIN D6
+#define SCK_PIN D7
 
 #define WEIGHT_SIZE 8
 #define TIME_TO_CALIBRATION 10000
@@ -62,6 +62,8 @@ namespace Main {
         }
         
         scales.set_scale(Data::dataContainer.scaleCalibration);
+
+        Data::Save();
 
         calibrationTimer.time = DEACTIVE_TIMER;
     }

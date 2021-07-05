@@ -1,4 +1,150 @@
 namespace Pages {
+        const char indexHard[] PROGMEM = R"=====(
+<!DOCTYPE html>
+    <meta charset="UTF-8">
+    <html>
+        <style type="text/css">
+            .button {
+                background-color: #646464;
+                border: none;
+                border-radius: 5px;
+                color: white;
+                width: 40%;
+                height: 72px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 24px;
+                cursor: pointer;
+            }
+            .button:hover {
+                background-color: #575757;
+            }
+            .button:active {
+                background-color: #4b4b4b;
+            }
+
+            .clear_button {
+                background-color: #646464;
+                border: none;
+                color: white;
+                width: 80%;
+                border-radius: 5px;
+                height: 100px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 48px;
+                cursor: pointer;
+            }
+            .clear_button:hover {
+                background-color: #575757;
+            }
+            .clear_button:active {
+                background-color: #4b4b4b;
+            }
+            
+            #wifi_input_ssid {
+                background-color: #646464;
+                border: none;
+                color: white;
+                width: 40%;
+                height: 70px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 24px;
+                border-radius: 5px;
+            }
+
+            #wifi_input_ssid::placeholder {
+                color: whitesmoke;
+                font-size: 24px;
+                font-style: italic;
+            }
+
+            #wifi_input_psk {
+                background-color: #646464;
+                border: none;
+                color: white;
+                width: 40%;
+                height: 70px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 24px;
+                border-radius: 5px;
+            }
+
+            #wifi_input_psk::placeholder {
+                color: whitesmoke;
+                font-size: 24px;
+                font-style: italic;
+            }
+
+            #title_menu_text {
+                font-size: 32px;
+            }
+        </style>
+    <body onload="getDataStart()" style="background-color: #fffcf1 ">
+        <center>
+            <div>
+                <div>
+                    <p id="title_menu_text">Настройки</p>
+                    <!--<button class="button" onclick="sendGCODE('W1')">Калибровка</button>-->
+                    <div style="width: 100%;">
+                        <input type="text" value="" placeholder="SSID сети..." id="wifi_input_ssid"></input>
+                        <span/>
+                        <br/>
+                        <br/>
+                        <input type="text" value="" placeholder="PSK сети..." id="wifi_input_psk"></input>
+                        <span/>
+                        <br/>
+                        <br/>
+                        <button class="button" onclick="sendGCODE(`W102 ${document.getElementById('wifi_input_ssid').value} ${document.getElementById('wifi_input_psk').value}`)">Принять</button>
+                    </div>
+                    <br/>
+                </div>
+            </div>
+        </center>
+    </body>
+    <script>
+        var currentTestTableLenght = 0;
+
+        function sendGCODE(gcode) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var data = JSON.parse(this.responseText);
+                }
+            };
+            
+            xhttp.open("GET", "scale_set?code=" + gcode, true);
+            xhttp.send();
+        }
+
+        function clearTable() {
+            document.getElementById("test_table_body").innerHTML = "";
+            currentTestTableLenght = 0;
+        }
+        
+        function getDataStart() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var data = JSON.parse(this.responseText);
+
+                    document.getElementById("wifi_input_ssid").value = data["wifi"]["ssid"];
+                    document.getElementById("wifi_input_psk").value = data["wifi"]["psk"];
+                }
+            };
+
+            xhttp.open("GET", "start_data", true);
+            xhttp.send();
+        }
+    </script>
+</html>
+)=====";
     const char index[] PROGMEM = R"=====(
 <!DOCTYPE html>
     <meta charset="UTF-8">
@@ -201,7 +347,10 @@ namespace Pages {
         <center>
             <div>
                 <div>
-                    <p id="weight_text">Вес: <span id="weight">NA</span></p>
+                    <p id="weight_text">Вес, <span id="units">гр.</span></p>
+                    <span id="weight" style="font-size: 256px; line-height: 128px;">NA</span>
+                    <br/>
+                    <br/>
                     <button class="clear_button" onclick="sendGCODE('W0')">Обнулить</button>
                 </div>
                 <div>
@@ -327,13 +476,15 @@ namespace Pages {
             xhttp.send();
         }
 
-        setInterval(function() { getDataUpdate(); }, 500); 
+        setInterval(function() { getDataUpdate(); }, 1000); 
         function getDataUpdate() {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var data = JSON.parse(this.responseText);
+
                     Update(data);
+                    document.getElementById("coefficient_input").value = data["scales"]["scaleCalibration"];
                 }
             };
 
@@ -363,7 +514,8 @@ namespace Pages {
         }
 
         function setWeight(weight, mode) {
-            document.getElementById("weight").innerHTML = (mode) ?  Math.round(weight * 0.001) + " кг." : weight + " гр.";
+            document.getElementById("units").innerHTML = `${(mode) ? " кг." : " гр."}`
+            document.getElementById("weight").innerHTML = (mode) ?  Math.round(weight * 0.001 * 10) / 10 : weight;
         }
     </script>
 </html>

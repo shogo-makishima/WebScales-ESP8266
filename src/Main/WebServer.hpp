@@ -5,15 +5,18 @@
 
 /// Сеть
 namespace Web {
-    /// Имя сети
-    const char* SSID = "admin";
-    /// Пароль от сети
-    const char* PASSWORD = "12345678";
-
     /// Пауза во время ожидания соединения с WiFi
     #define CONNECT_DELAY 500
-    /// Пин светодиода
-    #define LED_PIN 16
+    /// Пин входа для режима настройки сети
+    #define IN_PIN_HARD D5
+
+    /// Имя сети для настройки
+    #define APSSID "HardScales"
+    /// Пароль сети для настройки
+    #define APPSK "12345678"
+
+    /// В режиме настройки платы
+    bool isHard = false;
 
     /// Инициалзировать сервер по порту 80
     ESP8266WebServer Server(80);
@@ -31,45 +34,15 @@ namespace Web {
     void _handleIndex() {
         Serial.println("[SERVER] Handle /");
 
-        String page = Pages::index;
-        Server.send(200, "text/html", page);
+        Server.send(200, "text/html", Pages::index);
     }
 
-    /*
-    void _handleTableAdd() {
-        Serial.println("[SERVER] Handle /table_add");
+    /// Перехват главной страницы
+    void _handleHardIndex() {
+        Serial.println("[SERVER] Handle /");
 
-        Data::Test::MakeBreakpoint(Main::weight, 0.0f);
-
-        /// Буффер парсинга в JSON
-        String JSON_BUFFER;
-        
-        UpdateTest();
-
-        serializeJson(JSON, JSON_BUFFER);
-        
-        Server.send(200, "text/plane", JSON_BUFFER);
-
-        JSON.clear();
+        Server.send(200, "text/html", Pages::indexHard);
     }
-
-    void _handleTableClear() {
-        Serial.println("[SERVER] Handle /table_clear");
-
-        Data::Test::Clear();
-
-        /// Буффер парсинга в JSON
-        String JSON_BUFFER;
-        
-        UpdateTest();
-
-        serializeJson(JSON, JSON_BUFFER);
-        
-        Server.send(200, "text/plane", JSON_BUFFER);
-
-        JSON.clear();
-    }
-    */
 
     /// Перехват весов
     void _handleScale() {
@@ -78,15 +51,17 @@ namespace Web {
         Serial.println("[SERVER] Handle /scale_set");
 
         PRegex::ParseString(code);
-        
-        char JSON_BUFFER[JSON_BUFFER_SIZE];
+        if (!isHard) {
+            char JSON_BUFFER[JSON_BUFFER_SIZE];
 
-        UpdateData();
-        serializeJson(JSON, JSON_BUFFER);
+            UpdateData();
+            serializeJson(JSON, JSON_BUFFER);
 
-        Server.send(200, "text/plane", JSON_BUFFER);
+            JSON.clear();
 
-        JSON.clear();
+            Server.send(200, "text/plane", JSON_BUFFER);
+        }
+        Server.send(200, "text/plane", "{}");
     }
 
     /// Обновить данные
@@ -96,6 +71,20 @@ namespace Web {
         UpdateData();
         JSON["scales"]["weightStandard"] = Main::weightStandard;
 
+        serializeJson(JSON, JSON_BUFFER);
+        
+        Server.send(200, "text/plane", JSON_BUFFER);
+
+        JSON.clear();
+    }
+
+        /// Обновить данные
+    void _handleHardStartData() {
+        char JSON_BUFFER[JSON_BUFFER_SIZE];
+
+        JSON["wifi"]["ssid"] = Data::dataContainer.SSID;
+        JSON["wifi"]["psk"] = Data::dataContainer.PSK;
+        
         serializeJson(JSON, JSON_BUFFER);
         
         Server.send(200, "text/plane", JSON_BUFFER);
@@ -116,23 +105,39 @@ namespace Web {
 
     /// Инициализировать сервер
     void INIT() {
-        pinMode(LED_PIN, OUTPUT);
+        pinMode(IN_PIN_HARD, INPUT_PULLUP);
 
-        WiFi.begin(SSID, PASSWORD);
-        while (WiFi.status() != WL_CONNECTED) {
-            Serial.println("[WIFI] Connecting...");
-            delay(CONNECT_DELAY);
-        }
+        isHard = !digitalRead(IN_PIN_HARD);
+        Serial.print("[SERVER] Is board setting mode: ");
+        Serial.println(isHard);
         
-        Serial.print("[SERVER] Connected to ");
-        Serial.println(SSID);
-        Serial.print("[SERVER] IP address: ");
-        Serial.println(WiFi.localIP());
+        if (!isHard) {
+            WiFi.begin(Data::dataContainer.SSID, Data::dataContainer.PSK);
+            while (WiFi.status() != WL_CONNECTED) {
+                Serial.println("[WIFI] Connecting...");
+                delay(CONNECT_DELAY);
+            }
+            
+            Serial.print("[SERVER] Connected to ");
+            Serial.println(SSID);
+            Serial.print("[SERVER] IP address: ");
+            Serial.println(WiFi.localIP());
 
-        Server.on("/", _handleIndex);
+            Server.on("/", _handleIndex);
+            Server.on("/start_data", _handleStartData);
+            Server.on("/update_data", _handleUpdateData);
+        } else {
+            WiFi.softAP(APSSID, APPSK);
+            Serial.print("[SERVER] Start as ");
+            Serial.println(APSSID);
+            Serial.print("[SERVER] IP address: ");
+            Serial.println(WiFi.softAPIP().toString());
+
+            Server.on("/", _handleHardIndex);
+            Server.on("/start_data", _handleHardStartData);
+        }
+
         Server.on("/scale_set", _handleScale);
-        Server.on("/start_data", _handleStartData);
-        Server.on("/update_data", _handleUpdateData);
 
         Server.begin();
     }
@@ -159,13 +164,14 @@ namespace Web {
         for (int i = 0; i < TEST_LENGHT; i++) {
             
             if (Data::Test::breakpoints[i].isActive) {
-                JSON["table"][i]["weight"] = Data::Test::breakpoints[i].weight;
+                JSON["table"][i]["weight"] = round(Data::Test::breakpoints[i].weight * 10) / 10;
                 JSON["table"][i]["lenght"] = Data::Test::breakpoints[i].lenght;
                 count++;
             }
         }
 
         JSON["table"]["count"] = count;
+
     }
 };
 
