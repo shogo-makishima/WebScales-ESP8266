@@ -119,7 +119,7 @@ namespace Web {
             }
             
             Serial.print("[SERVER] Connected to ");
-            Serial.println(SSID);
+            Serial.println(Data::dataContainer.SSID);
             Serial.print("[SERVER] IP address: ");
             Serial.println(WiFi.localIP());
 
