@@ -1,8 +1,8 @@
 #ifndef _SCALES_H_
 #define _SCALES_H_
 
-#define DOUT_PIN D6
-#define SCK_PIN D7
+#define DOUT_PIN D1
+#define SCK_PIN D2
 
 #define WEIGHT_SIZE 8
 #define TIME_TO_CALIBRATION 10000
@@ -27,6 +27,13 @@ namespace Main {
     void INIT() {
         scales.begin(DOUT_PIN, SCK_PIN);
         
+        while (!scales.is_ready()) {
+            scales.power_up();
+            scales.begin(DOUT_PIN, SCK_PIN);
+            delay(1000);
+            Serial.print("[DEBUG] Scales state: "); Serial.println(scales.is_ready());
+        }
+
         scales.set_scale();                                          // выполняем измерение значения без калибровочного коэффициента
         scales.tare();                                               // сбрасываем значения веса на датчике в 0
         scales.set_scale(Data::dataContainer.scaleCalibration);      // устанавливаем калибровочный коэффициент
@@ -41,6 +48,7 @@ namespace Main {
         float local_weightGr = local_weightUnits * 0.035274f;
 
         if (local_weightGr < 1) local_weightGr = 0;
+        // Serial.println(local_weightGr);
         //weight = local_weightGr;
         
         weights[weightReadCarret] = local_weightGr;

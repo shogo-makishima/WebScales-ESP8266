@@ -1,7 +1,7 @@
 #ifndef _WEB_SERVER_H_
 #define _WEB_SERVER_H_
 
-#define JSON_BUFFER_SIZE 1024
+#define JSON_BUFFER_SIZE 2048
 
 /// Сеть
 namespace Web {
@@ -24,6 +24,11 @@ namespace Web {
     /// Мнеджер JSON
     DynamicJsonDocument JSON(JSON_BUFFER_SIZE);
 
+    /// Главная страница
+    String index = String(Pages::index);
+    /// Главная страница
+    String indexHard = String(Pages::indexHard);
+
     /// Обновить данные
     void UpdateData();
 
@@ -34,14 +39,14 @@ namespace Web {
     void _handleIndex() {
         Serial.println("[SERVER] Handle /");
 
-        Server.send(200, "text/html", Pages::index);
+        Server.send(200, "text/html", index);
     }
 
     /// Перехват главной страницы
     void _handleHardIndex() {
         Serial.println("[SERVER] Handle /");
 
-        Server.send(200, "text/html", Pages::indexHard);
+        Server.send(200, "text/html", indexHard);
     }
 
     /// Перехват весов
@@ -57,11 +62,12 @@ namespace Web {
             UpdateData();
             serializeJson(JSON, JSON_BUFFER);
 
-            JSON.clear();
-
             Server.send(200, "text/plane", JSON_BUFFER);
+
+            JSON.clear();
+        } else {
+            Server.send(200, "text/plane", "{}");
         }
-        Server.send(200, "text/plane", "{}");
     }
 
     /// Обновить данные
@@ -78,7 +84,7 @@ namespace Web {
         JSON.clear();
     }
 
-        /// Обновить данные
+    /// Обновить данные
     void _handleHardStartData() {
         char JSON_BUFFER[JSON_BUFFER_SIZE];
 
@@ -101,6 +107,8 @@ namespace Web {
         serializeJson(JSON, JSON_BUFFER);
 
         Server.send(200, "text/plane", JSON_BUFFER);
+
+        JSON.clear();
     }
 
     /// Инициализировать сервер
@@ -171,7 +179,6 @@ namespace Web {
         }
 
         JSON["table"]["count"] = count;
-
     }
 };
 

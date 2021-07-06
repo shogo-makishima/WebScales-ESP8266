@@ -3,6 +3,11 @@
 /// Включать при перепрошивке со смещением файла сохранения для отключения загрузки данных с FLASH памяти
 #define ON_FIRST_START_AFTER_REBUILD_FRIMWARE false
 
+/// Таймер обновления весов
+Timer weightUpdate = Timer(100, [] {
+    Main::UpdateWeight();
+});
+
 void setup() {
     Serial.begin(115200);
 
@@ -29,5 +34,7 @@ void setup() {
 
 void loop() {
     Web::Update();
-    Main::UpdateWeight();
+    
+    weightUpdate.Update();
+    if (weightUpdate.time <= 0.0f) weightUpdate.Reset();
 }

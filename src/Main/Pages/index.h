@@ -174,7 +174,7 @@ namespace Pages {
                 background-color: #646464;
                 border: none;
                 color: white;
-                width: 80%;
+                width: 40%;
                 border-radius: 5px;
                 height: 100px;
                 text-align: center;
@@ -352,6 +352,7 @@ namespace Pages {
                     <br/>
                     <br/>
                     <button class="clear_button" onclick="sendGCODE('W0')">Обнулить</button>
+                    <button class="clear_button" onclick="if (currentTestTableLenght != 8) {sendGCODE('W11');}">Добавить</button>
                 </div>
                 <div>
                     <p id="title_menu_text">Единицы измерения</p>
@@ -366,7 +367,6 @@ namespace Pages {
                         <br/>
                         <div style="width: 100%;">
                             <br/>
-                            <button class="button" onclick="if (currentTestTableLenght != 8) {sendGCODE('W11');}">Добавить</button>
                             <button class="button" onclick="sendGCODE('W10')">Очистить</button>
                             <br/>
                             <br/>
@@ -439,6 +439,7 @@ namespace Pages {
     </body>
     <script>
         var currentTestTableLenght = 0;
+        var wasServerAwake = false;
 
         function sendGCODE(gcode) {
             var xhttp = new XMLHttpRequest();
@@ -465,6 +466,8 @@ namespace Pages {
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var data = JSON.parse(this.responseText);
+                    
+                    wasServerAwake = true;
 
                     document.getElementById("coefficient_input").value = data["scales"]["scaleCalibration"];
                     document.getElementById("standart_weight_input").value = data["scales"]["weightStandard"];
@@ -476,7 +479,7 @@ namespace Pages {
             xhttp.send();
         }
 
-        setInterval(function() { getDataUpdate(); }, 1000); 
+        setInterval(function() { if (wasServerAwake) { getDataUpdate(); } }, 1000); 
         function getDataUpdate() {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
@@ -515,7 +518,7 @@ namespace Pages {
 
         function setWeight(weight, mode) {
             document.getElementById("units").innerHTML = `${(mode) ? " кг." : " гр."}`
-            document.getElementById("weight").innerHTML = (mode) ?  Math.round(weight * 0.001 * 10) / 10 : weight;
+            document.getElementById("weight").innerHTML = (mode) ?  Math.round(weight * 0.001) : weight;
         }
     </script>
 </html>
