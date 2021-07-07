@@ -8,8 +8,14 @@ Timer weightUpdate = Timer(100, [] {
     Main::UpdateWeight();
 });
 
+Timer ledServerUpdate = Timer(100, [] {
+    digitalWrite(D4, !Web::Server.getServer().status());
+});
+
 void setup() {
     Serial.begin(115200);
+
+    pinMode(D4, OUTPUT);
 
     Serial.println("[SERVER] Start!");
     Serial.println("[SERVER] Start!");
@@ -34,6 +40,9 @@ void setup() {
 
 void loop() {
     Web::Update();
+
+    ledServerUpdate.Update();
+    if (ledServerUpdate.time <= 0.0f) ledServerUpdate.Reset();
     
     weightUpdate.Update();
     if (weightUpdate.time <= 0.0f) weightUpdate.Reset();

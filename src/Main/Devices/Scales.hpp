@@ -44,19 +44,21 @@ namespace Main {
     void UpdateWeight() {
         Main::calibrationTimer.Update();
 
-        float local_weightUnits = scales.get_units(1);
-        float local_weightGr = local_weightUnits * 0.035274f;
+        if (scales.is_ready()) {
+            float local_weightUnits = scales.get_units(1);
+            float local_weightGr = local_weightUnits * 0.035274f;
 
-        if (local_weightGr < 1) local_weightGr = 0;
-        // Serial.println(local_weightGr);
-        //weight = local_weightGr;
-        
-        weights[weightReadCarret] = local_weightGr;
-        weightReadCarret++;
+            if (local_weightGr < 1) local_weightGr = 0;
+            Serial.println(local_weightGr);
+            //weight = local_weightGr;
+            
+            weights[weightReadCarret] = local_weightGr;
+            weightReadCarret++;
 
-        if (weightReadCarret >= WEIGHT_SIZE) {
-            weight = GetWeightFromArray();
-            weightReadCarret = 0;
+            if (weightReadCarret >= WEIGHT_SIZE) {
+                weight = GetWeightFromArray();
+                weightReadCarret = 0;
+            }
         }
     }
 

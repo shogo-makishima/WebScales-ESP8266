@@ -72,6 +72,8 @@ namespace Web {
 
     /// Обновить данные
     void _handleStartData() {
+        Serial.println("[SERVER] Handle /start_data");
+
         char JSON_BUFFER[JSON_BUFFER_SIZE];
 
         UpdateData();
@@ -86,6 +88,8 @@ namespace Web {
 
     /// Обновить данные
     void _handleHardStartData() {
+        Serial.println("[SERVER] Handle /start_data");
+
         char JSON_BUFFER[JSON_BUFFER_SIZE];
 
         JSON["wifi"]["ssid"] = Data::dataContainer.SSID;
@@ -100,6 +104,8 @@ namespace Web {
 
     /// Обновить данные
     void _handleUpdateData() {
+        Serial.println("[SERVER] Handle /update_data");
+
         Main::UpdateWeight();
 
         char JSON_BUFFER[JSON_BUFFER_SIZE];
@@ -147,11 +153,14 @@ namespace Web {
 
         Server.on("/scale_set", _handleScale);
 
+        // Server.keepAlive(true);
+
         Server.begin();
     }
 
     /// Обновление сервера
     void Update() {
+        // Serial.println(Server.getServer().status());
         Server.handleClient();
     }
 
@@ -166,8 +175,6 @@ namespace Web {
 
     /// Обновить тест
     void UpdateTest() {
-        Serial.println("[SERVER] Update test");
-
         int count = 0;
         for (int i = 0; i < TEST_LENGHT; i++) {
             

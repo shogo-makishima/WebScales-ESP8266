@@ -156,11 +156,11 @@ namespace Pages {
                 border-radius: 5px;
                 color: white;
                 width: 40%;
-                height: 72px;
+                height: 150px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 24px;
+                font-size: 46px;
                 cursor: pointer;
             }
             .button:hover {
@@ -176,11 +176,11 @@ namespace Pages {
                 color: white;
                 width: 40%;
                 border-radius: 5px;
-                height: 100px;
+                height: 250px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 48px;
+                font-size: 56px;
                 cursor: pointer;
             }
             .clear_button:hover {
@@ -195,11 +195,11 @@ namespace Pages {
                 border: none;
                 color: white;
                 width: 40%;
-                height: 70px;
+                height: 148px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 24px;
+                font-size: 46px;
                 border-radius: 5px;
             }
 
@@ -214,11 +214,11 @@ namespace Pages {
                 border: none;
                 color: white;
                 width: 40%;
-                height: 70px;
+                height: 148px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 24px;
+                font-size: 46px;
                 border-radius: 5px;
             }
 
@@ -237,12 +237,12 @@ namespace Pages {
                 border: none;
                 color: white;
                 width: 40%;
-                height: 72px;
+                height: 150px;
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 24px;
-                line-height: 72px;
+                font-size: 46px;
+                line-height: 150px;
                 border-radius: 5px;
                 cursor: pointer;
             }
@@ -284,7 +284,7 @@ namespace Pages {
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 24px;
+                font-size: 36px;
                
                 border-radius: 5px;
                 cursor: help;
@@ -343,6 +343,9 @@ namespace Pages {
             }
 
         </style>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/lib/jquery/3.5.1/jquery.min.js"></script>
+    </head>
     <body onload="getDataStart()" style="background-color: #fffcf1 ">
         <center>
             <div>
@@ -461,31 +464,20 @@ namespace Pages {
             currentTestTableLenght = 0;
         }
         
+        var updateID = 0;
+
         function getDataStart() {
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    var data = JSON.parse(this.responseText);
-                    
-                    wasServerAwake = true;
-
-                    document.getElementById("coefficient_input").value = data["scales"]["scaleCalibration"];
-                    document.getElementById("standart_weight_input").value = data["scales"]["weightStandard"];
-                    Update(data);
-                }
-            };
-
-            xhttp.open("GET", "start_data", true);
-            xhttp.send();
+            wasServerAwake = true;
+            
         }
 
-        setInterval(function() { if (wasServerAwake) { getDataUpdate(); } }, 1000); 
+        updateID = window.setInterval(function() { if (wasServerAwake) { getDataUpdate(); } }, 1000);
         function getDataUpdate() {
             var xhttp = new XMLHttpRequest();
+
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     var data = JSON.parse(this.responseText);
-
                     Update(data);
                     document.getElementById("coefficient_input").value = data["scales"]["scaleCalibration"];
                 }
